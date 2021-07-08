@@ -16,7 +16,7 @@ def updateViewInJenkins(){
 String getViewName(){
 	def branchName = "main"
 	if(branchName.contains("main"))
-		viewName = "chetan-test"
+		viewName = "chetan-test-1"
 	return viewName
 }
 
