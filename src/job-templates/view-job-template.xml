@@ -1,0 +1,34 @@
+<hudson.plugins.sectioned__view.ListViewSection>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+      </jobNames>
+      <jobFilters/>
+      <name>Branch: %WBC_BRANCH_VIEW%</name>
+      <includeRegex>af-web-banking.*-nightly-%BRANCH_TYPE%-%JENKINS_WBC_VERSION%.*</includeRegex>
+      <width>FULL</width>
+      <alignment>CENTER</alignment>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+    </hudson.plugins.sectioned__view.ListViewSection>
+    <hudson.plugins.sectioned__view.TextSection>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../hudson.plugins.sectioned__view.ListViewSection/jobNames/comparator"/>
+      </jobNames>
+      <jobFilters/>
+      <name></name>
+      <width>FULL</width>
+      <alignment>CENTER</alignment>
+      <text>&lt;b&gt;Constellation: &lt;/b&gt;
+&lt;a href=&quot;https://bitbucket.sits.avaloq.net/projects/AF/repos/avaloq-product-wb-aws/branches&quot; style=&quot;font-size:16px&quot;&gt;avaloq-product-wb-aws&lt;/a&gt;
+&lt;a href=&quot;https://bitbucket.sits.avaloq.net/projects/AF/repos/avaloq-product-wb-aws/branches?base=%WB_AWS_BRANCH_HTML_FORMAT%&quot; style=&quot;font-size:16px&quot;&gt;%WB_AWS_BRANCH%&lt;/a&gt; |
+&lt;b&gt;Start time:&lt;/b&gt; 22:00 |
+&lt;b&gt;Test Environment:&lt;/b&gt; &lt;a href=&quot;http://%ADAI_HOST%.sys.net:1818&quot; style=&quot;font-size:16px&quot;&gt;&lt;b&gt;%ADAI_HOST%.sys.net&lt;/b&gt;&lt;/a&gt;</text>
+      <style>NOTE</style>
+    </hudson.plugins.sectioned__view.TextSection>
