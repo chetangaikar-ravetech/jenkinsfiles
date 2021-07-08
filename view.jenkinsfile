@@ -31,8 +31,8 @@ def updateViewInJenkins(){
 		cat viewconfig.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
 		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
-	   """
-}
+	"""
+	}
 
 String getViewName(){
 	def branchName = "main"
