@@ -8,12 +8,12 @@ timestamps {
         cleanWs()
           updateViewInJenkins()
           }
-        } catch (error) {
+        } catch (error) {
             echo "Caught Exception: ${error}"
             currentBuild.result = 'FAILURE'
-        } finally {
+        } finally {
             stage('Cleanup') {
-                cleanWs()
+              cleanWs()
             }
         }
     }
