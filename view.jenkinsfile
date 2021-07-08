@@ -1,0 +1,47 @@
+JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
+JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/chetan-test/"
+
+
+def updateViewInJenkins(){
+	println "Updating ${getViewName()} View in Jenkins..."
+	generateConfigXML("view")
+	sh """
+		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
+		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
+		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN}  --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
+		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
+	   """
+}
+
+String getViewName(){
+	def branchName = "main"
+	if(branchName.contains("main"))
+		viewName = "chetan-test"
+	return viewName
+}
+
+
+def generateConfigXML(String job_type){
+	String temp_WB_AWS_BRANCH = params.WB_AWS_BRANCH.replaceAll('/','%2F');
+	def wbc_branch_view = params.WBC_BRANCH
+	if (getBranchType().contains("hotfix"))
+		wbc_branch_view = params.WBC_BRANCH + " (Live Release)"
+	sh """
+		git clone git@github.com:chetangaikar-ravetech/jenkinsfiles.git
+		cd jenkinsfiles
+		cd src/job-templates
+		sed -i -r \
+			-e "s|%WBC_BRANCH%|${params.WBC_BRANCH}|g" \
+			-e "s|%WBC_BRANCH_VIEW%|${wbc_branch_view}|g" \
+			-e "s|%JENKINS_BUILD_JOB_NAME%|${getJobName("build")}|g" \
+			-e "s|%BRANCH_TYPE%|${getShortBranchType()}|g" \
+			-e "s|%ADAI_HOST%|${params.ADAI_HOST}|g" \
+			-e "s|%JENKINS_TEST_JOB_NAME%|${getJobName("test")}|g" \
+			-e "s|%AFP_SERVER_RELEASE_ORIGIN%|${params.AFP_SERVER_RELEASE_ORIGIN}|g" \
+			-e "s|%AFP_SERVER_RELEASE_TARGET%|${params.AFP_SERVER_RELEASE_TARGET}|g" \
+			-e "s|%JENKINS_WBC_VERSION%|${getVersionNumber()}|g" \
+			-e "s|%WB_AWS_BRANCH%|${params.WB_AWS_BRANCH}|g" \
+			-e "s|%WB_AWS_BRANCH_HTML_FORMAT%|${temp_WB_AWS_BRANCH}|g" \
+			${job_type}-job-template.xml
+	"""
+}
