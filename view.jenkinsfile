@@ -5,6 +5,7 @@ JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view
 def updateViewInJenkins(){
 	println "Updating ${getViewName()} View in Jenkins..."
 	sh """
+    git clone ssh://git@bitbucket.sits.avaloq.net/fd/jenkinsfiles.git
 		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
 		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN}  --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
@@ -17,4 +18,24 @@ String getViewName(){
 	if(branchName.contains("main"))
 		viewName = "chetan-test"
 	return viewName
+}
+
+
+timestamps {
+    node {
+        try {
+			stage('Update View in Jenkins') {
+				cleanWs()
+				updateViewInJenkins()
+            }
+        } catch (error) {
+            echo "Caught Exception: ${error}"
+            currentBuild.result = 'FAILURE'
+
+        } finally {
+            stage('Cleanup') {
+                cleanWs()
+            }
+        }
+    }
 }
