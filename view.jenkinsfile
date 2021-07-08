@@ -26,7 +26,7 @@ def updateViewInJenkins(){
 		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
 		cat viewconfig.xml
 		
-		sed 's/test/.*/g' viewconfig.xml > viewconfig2.xml
+		sed 's/.*/ViewCreationJob/g' viewconfig.xml > viewconfig2.xml
 		echo ------------------------------------------------------
 		cat viewconfig2.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig2.xml" -H "Content-Type:application/xml" > result.xml
