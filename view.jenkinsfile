@@ -28,7 +28,7 @@ def updateViewInJenkins(){
 		
 		sed 's/test/.*/g' viewconfig.xml > viewconfig2.xml
 		echo ------------------------------------------------------
-		cat viewconfig.xml
+		cat viewconfig2.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig2.xml" -H "Content-Type:application/xml" > result.xml
 		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
 	"""
