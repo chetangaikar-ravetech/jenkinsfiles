@@ -24,7 +24,10 @@ def updateViewInJenkins(){
 	sh """
     		git clone https://github.com/chetangaikar-ravetech/jenkinsfiles.git
 		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
+		cat viewconfig.xml
 		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
+		echo ------------------------------------------------------
+		cat viewconfig.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN}  --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
 		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
 	   """
