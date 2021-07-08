@@ -1,6 +1,23 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
 JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/chetan-test/"
 
+timestamps {
+  node {
+    try {
+      stage('Update View in Jenkins') {
+        cleanWs()
+          updateViewInJenkins()
+          }
+        } catch (error) {
+            echo "Caught Exception: ${error}"
+            currentBuild.result = 'FAILURE'
+        } finally {
+            stage('Cleanup') {
+                cleanWs()
+            }
+        }
+    }
+}
 
 def updateViewInJenkins(){
 	println "Updating ${getViewName()} View in Jenkins..."
@@ -18,24 +35,4 @@ String getViewName(){
 	if(branchName.contains("main"))
 		viewName = "chetan-test"
 	return viewName
-}
-
-
-timestamps {
-    node {
-        try {
-			stage('Update View in Jenkins') {
-				cleanWs()
-				updateViewInJenkins()
-            }
-        } catch (error) {
-            echo "Caught Exception: ${error}"
-            currentBuild.result = 'FAILURE'
-
-        } finally {
-            stage('Cleanup') {
-                cleanWs()
-            }
-        }
-    }
 }
