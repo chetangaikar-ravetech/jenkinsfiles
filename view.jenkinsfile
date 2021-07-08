@@ -1,5 +1,5 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
-JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/chetan-test/"
+JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/"
 
 timestamps {
   node {
