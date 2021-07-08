@@ -1,23 +1,202 @@
-pipeline {
-  agent any
+/*
+ * Copyright Avaloq Licence AG. All rights reserved.
+ * Avaloq Licence AG
+ * Schwerzistrasse 6 | CH-8807 Freienbach | Switzerland
+ *
+ * This software is the confidential and proprietary information of Avaloq Evolution AG.
+ * You shall not disclose whole or parts of it and shall use it only in accordance with the terms of the
+ * license agreement you entered into with Avaloq Evolution AG.
+ */
 
-  stages {
-    stage("build") {
-      steps {
-        echo 'building the app...'
-      }
-    }
+/* ============================================
+ * Parameters:
+ *   WBC_BRANCH - e.g. "release/24.55"
+ *   WB_AWS_BRANCH - e.g. "hotfix/27.1.x"
+ *   AFP_SERVER_RELEASE_ORIGIN - e.g. "24.54"
+ *   AFP_SERVER_RELEASE_TARGET - e.g. "24.5501"
+ *   ADAI_HOST - e.g. "c0d00436"
+ *   IS_TRIGGER_DEPLOY_JOB - e.g. "false"
+ * ============================================
+ */
+ 
+JENKINS_API_TOKEN="sa_webbanking:11bd32f0d242e97ee16f22d212810d25f1"
+JENKINS_VIEW_BASE_URL="https://jenkins.sits.avaloq.net/view/AVALOQ-ProductsAndConstellations/job/Products/job/WB/job/WB2.4/job/Web_Banking_WB/view/Nightly%20Builds%20"
+JENKINS_BASE_URL="https://jenkins.sits.avaloq.net/job/Products/job/WB/job/WB2.4/job/Web_Banking_WB/"
+JENKINS_JOB_BASE_URL=JENKINS_BASE_URL+"job/"
 
-    stage("test") {
-      steps {
-        echo 'testing the app...'
-      }
-    }
+timestamps {
+    node {
+        try {
+			stage('Verify values before proceeding') {
+				cleanWs()
+				verifyValues()
+			}
+			stage('Update View in Jenkins') {
+				cleanWs()
+				updateViewInJenkins()
+            }
+			stage('Create Build Branch in Jenkins') {
+				cleanWs()
+				createJobInJenkins("build")
+			}
+            stage('Create Deploy Branch in Jenkins') {
+				cleanWs()
+				createJobInJenkins("deploy")
+            }
+			stage('Create Test Branch in Jenkins') {
+				cleanWs()
+				createJobInJenkins("test")
+			}
+			stage('Execute Build of Deploy Job in Jenkins') {
+				script{
+					if(params.IS_TRIGGER_DEPLOY_JOB){
+						build (job: "Products/Web_Banking_WB/" + getJobName("deploy"), propagate: false, wait: false)
+					}
+				}
+			}
+        } catch (error) {
+            echo "Caught Exception: ${error}"
+            currentBuild.result = 'FAILURE'
 
-    stage("deploy") {
-      steps {
-        echo 'deploying the app...'
-      }
-    }
-  }
+        } finally {
+            stage('Cleanup') {
+                cleanWs()
+            }
+        }
+    }
+}
+
+def verifyValues(){
+	println "Checking if WB_AWS_BRANCH is not empty or is valid..."
+		(params.WB_AWS_BRANCH.isEmpty() || !params.WB_AWS_BRANCH.contains("/")) ? returnExitStatus(3) : true
+	println "Checking if WBC_BRANCH is not empty or is valid..."
+		(params.WBC_BRANCH.isEmpty()|| !params.WB_AWS_BRANCH.contains("/")) ? returnExitStatus(3) : true
+	println "Checking if AFP_SERVER_RELEASE_ORIGIN is not empty..."
+		(params.AFP_SERVER_RELEASE_ORIGIN.isEmpty()) ? returnExitStatus(3) : true
+	println "Checking if AFP_SERVER_RELEASE_TARGET is not empty..."
+		(params.AFP_SERVER_RELEASE_TARGET.isEmpty()) ? returnExitStatus(3) : true
+	println "Checking if ADAI_HOST is not empty..."
+		(params.ADAI_HOST.isEmpty()) ? returnExitStatus(3) : true
+	(checkJobIfExistInJenkins("build")) ? returnExitStatus(2) : true
+		cleanWs()
+	(checkJobIfExistInJenkins("deploy")) ? returnExitStatus(2) : true
+		cleanWs()
+	(checkJobIfExistInJenkins("test")) ? returnExitStatus(2) : true
+		cleanWs()
+	(!checkViewIfExistInJenkins()) ? returnExitStatus(1) :  true
+}
+
+def getJobName(String job_type){
+	switch(job_type){
+		case "deploy":
+			return 'af-web-banking-product-nightly-'+getShortBranchType()+'-'+getVersionNumber()+'-deployment'
+		case "test":
+			return 'af-web-banking-migration-nightly-'+getShortBranchType()+'-'+getVersionNumber()+'-test'
+		case "build":
+			return 'af-web-banking-core-nightly-'+getShortBranchType()+'-'+getVersionNumber()+'-build'
+	}
+}
+
+String getViewName(){
+	def viewName = getBranchType()
+	if(viewName.contains("hotfix"))
+		viewName = "Hotfix%20(Live)"
+	else if(viewName.contains("develop"))
+		viewName = "Dev"
+	else if(viewName.contains("release"))
+		viewName = "Rel"
+	else
+		viewName = "zExperimental"
+	return viewName
+}
+
+def getBranchType(){
+	return params.WBC_BRANCH.substring(0, params.WBC_BRANCH.lastIndexOf("/"))
+}
+
+def getShortBranchType(){
+	def shortBranch = getBranchType()
+	if(shortBranch.contains("hotfix"))
+		shortBranch = "hotfix"
+	else if(shortBranch.contains("develop"))
+		shortBranch = "dev"
+	else if(shortBranch.contains("release"))
+		shortBranch = "rel"
+	else
+		shortBranch = "zExperimental"
+	return shortBranch
+}
+
+def getVersionNumber(){
+	return params.WBC_BRANCH.substring(params.WBC_BRANCH.lastIndexOf("/") + 1, params.WBC_BRANCH.length())
+}
+
+def checkViewIfExistInJenkins(){
+	println "Checking if ${getViewName()} View exists..."
+	configXML = sh(script: "curl -X GET \"${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml\" -u ${JENKINS_API_TOKEN}", returnStdout: true)
+	return (configXML.contains("404 Not Found")) ? false : true
+}
+
+def checkJobIfExistInJenkins(String job_type){
+	println "Checking if Job exists..."
+	configXML = sh(script: "curl -X GET \"${JENKINS_JOB_BASE_URL}${getJobName(job_type)}/config.xml\" -u ${JENKINS_API_TOKEN}", returnStdout: true)
+	return (configXML.contains("404 Not Found")) ? false : true
+}
+
+def createJobInJenkins(String job_type){
+	println "Creating ${getJobName(job_type)} Jenkins job..."
+	generateConfigXML(job_type)
+	postXML = sh(script: "curl -X GET \"${JENKINS_BASE_URL}createItem?name=${getJobName(job_type)}\" -u ${JENKINS_API_TOKEN} --data-binary \"@jenkinsfiles/src/job-templates/${job_type}-job-template.xml\" -H \"Content-Type:application/xml\" ", returnStdout: true)
+	if(postXML.contains("No Content-Type header set")){ println "ERROR: Creating of Jenkins job failed..."; sh "exit 4"}
+}
+
+def updateViewInJenkins(){
+	println "Updating ${getViewName()} View in Jenkins..."
+	generateConfigXML("view")
+	sh """
+		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
+		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
+		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN}  --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
+		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
+	   """
+}
+
+def generateConfigXML(String job_type){
+	String temp_WB_AWS_BRANCH = params.WB_AWS_BRANCH.replaceAll('/','%2F');
+	def wbc_branch_view = params.WBC_BRANCH
+	if (getBranchType().contains("hotfix"))
+		wbc_branch_view = params.WBC_BRANCH + " (Live Release)"
+	sh """
+		git clone ssh://git@bitbucket.sits.avaloq.net/fd/jenkinsfiles.git
+		cd jenkinsfiles
+		cd src/job-templates
+		sed -i -r \
+			-e "s|%WBC_BRANCH%|${params.WBC_BRANCH}|g" \
+			-e "s|%WBC_BRANCH_VIEW%|${wbc_branch_view}|g" \
+			-e "s|%JENKINS_BUILD_JOB_NAME%|${getJobName("build")}|g" \
+			-e "s|%BRANCH_TYPE%|${getShortBranchType()}|g" \
+			-e "s|%ADAI_HOST%|${params.ADAI_HOST}|g" \
+			-e "s|%JENKINS_TEST_JOB_NAME%|${getJobName("test")}|g" \
+			-e "s|%AFP_SERVER_RELEASE_ORIGIN%|${params.AFP_SERVER_RELEASE_ORIGIN}|g" \
+			-e "s|%AFP_SERVER_RELEASE_TARGET%|${params.AFP_SERVER_RELEASE_TARGET}|g" \
+			-e "s|%JENKINS_WBC_VERSION%|${getVersionNumber()}|g" \
+			-e "s|%WB_AWS_BRANCH%|${params.WB_AWS_BRANCH}|g" \
+			-e "s|%WB_AWS_BRANCH_HTML_FORMAT%|${temp_WB_AWS_BRANCH}|g" \
+			${job_type}-job-template.xml
+	"""
+}
+
+def returnExitStatus(exitStatus){
+	switch(exitStatus) {
+		case 1:
+			println "ERROR: View in Jenkins does not exist. Please create a view manually first..."
+			break
+		case 2:
+			println "ERROR: Job in Jenkins already exists. Please use another name..."
+			break
+		case 3:
+			println "ERROR: Variable undefined or invalid. Please enter all mandatory fields correctly..."
+			break
+	}
+	sh "exit ${exitStatus}"
 }
