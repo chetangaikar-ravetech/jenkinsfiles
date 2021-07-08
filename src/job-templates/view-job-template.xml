@@ -1,10 +1,10 @@
 <hudson.plugins.sectioned__view.ListViewSection>
       <jobNames>
         <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>ViewCreationJob</string>
       </jobNames>
       <jobFilters/>
       <name>Branch: main</name>
-      <includeRegex>.*</includeRegex>
       <width>FULL</width>
       <alignment>CENTER</alignment>
       <columns>
