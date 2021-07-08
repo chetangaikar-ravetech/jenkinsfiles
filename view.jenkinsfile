@@ -22,7 +22,7 @@ timestamps {
 def updateViewInJenkins(){
 	println "Updating ${getViewName()} View in Jenkins..."
 	sh """
-    		git clone git@github.com:chetangaikar-ravetech/jenkinsfiles.git
+    		git clone https://github.com/chetangaikar-ravetech/jenkinsfiles.git
 		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
 		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN}  --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
