@@ -10,7 +10,7 @@ timestamps {
           }
         } catch (error) {
             echo "Caught Exception: ${error}"
-            currentBuild.result = 'FAILURE'
+	    currentBuild.result = 'FAILURE'
         } finally {
             stage('Cleanup') {
               cleanWs()
