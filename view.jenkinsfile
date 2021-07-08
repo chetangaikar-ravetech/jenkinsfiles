@@ -12,11 +12,11 @@ timestamps {
             echo "Caught Exception: ${error}"
 	    currentBuild.result = 'FAILURE'
         } finally {
-            stage('Cleanup') {
-              cleanWs()
-            }
-        }
-    }
+	    stage('Cleanup') {
+	        cleanWs()
+	}
+	}
+}
 }
 
 def updateViewInJenkins(){
