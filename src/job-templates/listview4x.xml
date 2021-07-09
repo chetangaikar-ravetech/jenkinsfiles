@@ -1,30 +1,35 @@
 <hudson.plugins.sectioned__view.ListViewSection>
-<jobNames>
-<comparator class="hudson.util.CaseInsensitiveComparator"/>
-</jobNames>
-<jobFilters/>
-<name>%BRANCH_TYPE%/%RELEASE_NO%</name>
-<includeRegex>avaloq-wb.*-constellation-%BRANCH_TYPE%-%RELEASE_NO%.*|avaloq-product-.*-%BRANCH_TYPE%-%RELEASE_NO%.*</includeRegex>
-<width>FULL</width>
-<alignment>CENTER</alignment>
-<columns>
-<hudson.views.StatusColumn/>
-<hudson.views.WeatherColumn/>
-<hudson.views.JobColumn/>
-<hudson.views.LastSuccessColumn/>
-<hudson.views.LastFailureColumn/>
-<hudson.views.LastDurationColumn/>
-<hudson.views.BuildButtonColumn/>
-</columns>
+  <jobNames>
+    <comparator class="hudson.util.CaseInsensitiveComparator"/>
+  </jobNames>
+  <jobFilters/>
+  <name>%BRANCH_TYPE%/%RELEASE_NO%</name>
+  <includeRegex>avaloq-wb.*-constellation-%BRANCH_TYPE%-%RELEASE_NO%.*|avaloq-product-.*-%BRANCH_TYPE%-%RELEASE_NO%.*</includeRegex>
+  <width>FULL</width>
+  <alignment>CENTER</alignment>
+  <columns>
+    <hudson.views.StatusColumn/>
+    <hudson.views.WeatherColumn/>
+    <hudson.views.JobColumn/>
+    <hudson.views.LastSuccessColumn/>
+    <hudson.views.LastFailureColumn/>
+    <hudson.views.LastDurationColumn/>
+    <hudson.views.BuildButtonColumn/>
+  </columns>
 </hudson.plugins.sectioned__view.ListViewSection>
 <hudson.plugins.sectioned__view.TextSection>
-<jobNames>
-<comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../hudson.plugins.sectioned__view.ListViewSection/jobNames/comparator"/>
-</jobNames>
-<jobFilters/>
-<name/>
-<width>FULL</width>
-<alignment>CENTER</alignment>
-<text><b>Constellation: </b> <a href="https://bitbucket.sits.avaloq.net/projects/WBC/repos/avaloq-wb-constellation/browse" style="font-size:16px">master</a> | <b>Start time:</b> 07:00 GMT | <b>Test Environment: %HOST%</b> <a href="https://wb-%HOST%.dev01.waf03.avaloq.net/wb/ui/">3.0 Web Login</a> | <b>Namespace:</b> <a href="https://acpr-dev01.cp.avaloq.net/console/project/avaloq-wb-constellation-%HOST%/overview">avaloq-wb-constellation-%HOST%</a></text>
-<style>NOTE</style>
+  <jobNames>
+    <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../hudson.plugins.sectioned__view.ListViewSection/jobNames/comparator"/>
+  </jobNames>
+  <jobFilters/>
+  <name/>
+  <width>FULL</width>
+  <alignment>CENTER</alignment>
+  <text>
+    <b>Constellation:</b>
+    <a href="https://bitbucket.sits.avaloq.net/projects/WBC/repos/avaloq-wb-constellation/browse" style="font-size:16px">master</a> | <b>Start time:</b> 07:00 GMT | <b>Test Environment: %HOST%</b>
+    <a href="https://wb-%HOST%.dev01.waf03.avaloq.net/wb/ui/">3.0 Web Login</a> | <b>Namespace:</b>
+    <a href="https://acpr-dev01.cp.avaloq.net/console/project/avaloq-wb-constellation-%HOST%/overview">avaloq-wb-constellation-%HOST%</a>
+  </text>
+  <style>NOTE</style>
 </hudson.plugins.sectioned__view.TextSection>
