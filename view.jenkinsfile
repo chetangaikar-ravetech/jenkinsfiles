@@ -70,11 +70,12 @@ def updateViewInJenkins(){
   generateConfigXML("view")
 	sh """
 		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
-		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/listview4x.xml' viewconfig.xml
+		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
 		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
 	"""
 	}
+
 
 
 def createJobInJenkins(String job_type){
@@ -85,6 +86,8 @@ def createJobInJenkins(String job_type){
 }
 
 def getJobName(String job_type){
+  string branch_type = "${BRANCH}".split("/")[0]
+  string release_no = "${BRANCH}".split("/")[1]
 	switch(job_type){
 		case "adaiRelease":
 			return 'avaloq-product-wb-front-platform-adai-'+${branch_type}+'-'+${release_no}+'-deploy'
