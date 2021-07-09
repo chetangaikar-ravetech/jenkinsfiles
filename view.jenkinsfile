@@ -104,6 +104,11 @@ def updateViewInJenkins(){
 	}
 
 
+def checkJobIfExistInJenkins(String job_type){
+	println "Checking if Job exists..."
+	configXML = sh(script: "curl -X GET \"${JENKINS_JOB_BASE_URL}${getJobName(job_type)}/config.xml\" -u ${JENKINS_API_TOKEN}", returnStdout: true)
+	return (configXML.contains("404 Not Found")) ? false : true
+}
 
 def createJobInJenkins(String job_type){
 	println "Creating ${getJobName(job_type)} Jenkins job..."
