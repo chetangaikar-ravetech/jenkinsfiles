@@ -1,6 +1,6 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
 JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/"
-BRANCH="release/4.1.x"
+BRANCH="develop/4.1.x"
 HOST="c0d00434"
 
 timestamps {
@@ -39,6 +39,8 @@ String getViewName(){
 	string branch_type = "${BRANCH}".split("/")[0]
 	if(branch_type.contains("release"))
 		viewName = "avaloq-wb-constellation-release"
+  else if(branch_type.contains("develop"))
+    viewName = "avaloq-wb-constellation-develop"
 	return viewName
 }
 
