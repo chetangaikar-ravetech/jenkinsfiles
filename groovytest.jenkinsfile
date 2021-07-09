@@ -1,0 +1,25 @@
+BRANCH="release/4.1.x"
+
+timestamps {
+  node {
+    try {
+      stage('Update View in Jenkins') {
+        cleanWs()
+          splittext()
+          }
+        } catch (error) {
+            echo "Caught Exception: ${error}"
+	    currentBuild.result = 'FAILURE'
+        } finally {
+	    stage('Cleanup') {
+	        cleanWs()
+	}
+	}
+}
+}
+
+def splittext() {
+  def branchName = ${BRANCH}.split('/')[0]
+  return branchName
+  sh 'echo branchName'
+}
