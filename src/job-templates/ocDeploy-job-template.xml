@@ -49,13 +49,13 @@
         <hudson.model.StringParameterDefinition>
           <name>ADAI_HOST</name>
           <description>The ADAI host DB where ACP is installed and where the rest services will connect to.</description>
-          <defaultValue>%HOST%</defaultValue>
+          <defaultValue>%DEPLOY_HOST%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>NAMESPACE</name>
           <description/>
-          <defaultValue>avaloq-wb-constellation-%HOST%</defaultValue>
+          <defaultValue>avaloq-wb-constellation-%DEPLOY_HOST%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -100,7 +100,7 @@
   <triggers>
     <jenkins.triggers.ReverseBuildTrigger>
       <spec/>
-      <upstreamProjects>avaloq-wb-constellation-release-4.1.x-build-snapshot</upstreamProjects>
+      <upstreamProjects>avaloq-wb-constellation-%BRANCH_TYPE%-%RELEASE_NO%-build-snapshot</upstreamProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
