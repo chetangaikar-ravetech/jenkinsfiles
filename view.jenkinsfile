@@ -1,5 +1,7 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
 JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/"
+BRANCH="release/4.1.x"
+HOST="c0d00434"
 
 timestamps {
   node {
@@ -21,12 +23,11 @@ timestamps {
 
 def updateViewInJenkins(){
 	println "Updating ${getViewName()} View in Jenkins..."
+  generateConfigXML("view")
 	sh """
-    		git clone https://github.com/chetangaikar-ravetech/jenkinsfiles.git
 		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
 		cat viewconfig.xml
-		
-		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
+		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/listview4x.xml' viewconfig.xml
 		echo ------------------------------------------------------
 		cat viewconfig.xml
 		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
@@ -35,8 +36,23 @@ def updateViewInJenkins(){
 	}
 
 String getViewName(){
-	def branchName = "main"
-	if(branchName.contains("main"))
-		viewName = "chetan-test-1"
+	string branch_type = "${BRANCH}".split("/")[0]
+	if(branch_type.contains("release"))
+		viewName = "avaloq-wb-constellation-release"
 	return viewName
+}
+
+def generateConfigXML(String job_type){
+  string branch_type = "${BRANCH}".split("/")[0]
+  string release_no = "${BRANCH}".split("/")[1]
+	sh """
+		git clone ssh://git@bitbucket.sits.avaloq.net/fd/jenkinsfiles.git
+		cd jenkinsfiles
+		cd src/job-templates
+		sed -i -r \
+			-e "s|%BRANCH_TYPE%|${branch_type}|g" \
+			-e "s|%RELEASE_NO%|${release_no}|g" \
+			-e "s|%HOST%|${HOST}|g" \
+			listview4x.xml
+	"""
 }
