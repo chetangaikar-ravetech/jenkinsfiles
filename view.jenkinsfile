@@ -59,7 +59,7 @@ def verifyValues() {
   println "Checking if ${getJobName("ocDeploy")} Jobs exist; otherwise EXITING if it does."
   (checkIfJobExistInJenkins("ocDeploy")) ? returnExitStatus(2) : true
 		cleanWs()
-  println "Checking if avaloq-wb-constellation-release view exists and EXITING if it does not."
+  println "Checking if ${getViewName()} view exists and EXITING if it does not."
 	(!checkIfViewExistInJenkins()) ? returnExitStatus(1) : true
   cleanWs()
 }
