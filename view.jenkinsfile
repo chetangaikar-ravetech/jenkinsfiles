@@ -2,8 +2,11 @@ JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
 JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/view/Avaloq/job/Product/job/WB/job/WB3.0/view/"
 JENKINS_BASE_URL="http://35.173.230.44:8080/job/Product/job/WB/job/WB3.0/"
 JENKINS_JOB_BASE_URL=JENKINS_BASE_URL+"job/"
+
+//Parameters
 //BRANCH="release/4.1.x"
-//HOST="c0d00434"
+//deployHOST="c0d00434"
+//afsAdapterIntegrationDB="AFP Adapter Integration - AFP 4.x on ACP 5.2"
 
 timestamps {
   node {
@@ -45,7 +48,7 @@ timestamps {
 
 def verifyValues() {
   println "Checking for the empty parameters."
-  ((params.BRANCH.isEmpty() || !params.BRANCH.contains("/")) && (params.HOST.isEmpty())) ? returnExitStatus(3) : true
+  ((params.BRANCH.isEmpty() || !params.BRANCH.contains("/")) && (params.deployHOST.isEmpty())) ? returnExitStatus(3) : true
 
   println "Checking if ${getJobName("adaiRelease")} Jobs exist; otherwise EXITING if it does."
   (checkIfJobExistInJenkins("adaiRelease")) ? returnExitStatus(2) : true
@@ -88,7 +91,9 @@ def generateConfigXML(String job_type){
 		sed -i -r \
 			-e "s|%BRANCH_TYPE%|${branch_type}|g" \
 			-e "s|%RELEASE_NO%|${release_no}|g" \
-			-e "s|%HOST%|${HOST}|g" \
+			-e "s|%DEPLOY_HOST%|${params.deployHOST}|g" \
+      -e "s|%ADAPTER_INTEGRATION_DB%|${params.afsAdapterIntegrationDB}|g" \
+      -e "s|%ICE_CHANGES%|${params.installIceChanges}|g" \
 			${job_type}-job-template.xml
 	"""
 }
