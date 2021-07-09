@@ -51,7 +51,7 @@
       <triggers>
         <jenkins.triggers.ReverseBuildTrigger>
           <spec/>
-          <upstreamProjects>Products/WB/WB3.0/avaloq-wb-constellation-release-4.1.x-adai-clone</upstreamProjects>
+          <upstreamProjects>Products/WB/WB3.0/avaloq-wb-constellation-%BRANCH_TYPE%-%RELEASE_NO%-adai-clone</upstreamProjects>
           <threshold>
             <name>SUCCESS</name>
             <ordinal>0</ordinal>
