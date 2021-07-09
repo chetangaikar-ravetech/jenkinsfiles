@@ -1,8 +1,8 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
 JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/view/Avaloq/job/Product/job/WB/job/WB3.0/view/"
 JENKINS_BASE_URL="http://35.173.230.44:8080/job/Product/job/WB/job/WB3.0/"
-BRANCH="release/4.1.x"
-HOST="c0d00434"
+//BRANCH="release/4.1.x"
+//HOST="c0d00434"
 
 timestamps {
   node {
@@ -43,6 +43,21 @@ timestamps {
 }
 
 def verifyValues() {
+  println "Checking for the empty parameters."
+  ((params.BRANCH.isEmpty() || !params.BRANCH.contains("/")) && (params.HOST.isEmpty())) ? returnExitStatus(3) : true
+
+  println "Checking if ${getJobName("adaiRelease")} Jobs exist; otherwise EXITING if it does."
+  (checkIfJobExistInJenkins("adaiRelease")) ? returnExitStatus(2) : true
+		cleanWs()
+  println "Checking if ${getJobName("adaiClone")} Jobs exist; otherwise EXITING if it does."
+	(checkIfJobExistInJenkins("adaiClone")) ? returnExitStatus(2) : true
+		cleanWs()
+  println "Checking if ${getJobName("buildSnapshot")} Jobs exist; otherwise EXITING if it does."
+	(checkIfJobExistInJenkins("buildSnapshot")) ? returnExitStatus(2) : true
+		cleanWs()
+  println "Checking if ${getJobName("ocDeploy")} Jobs exist; otherwise EXITING if it does."
+  (checkIfJobExistInJenkins("ocDeploy")) ? returnExitStatus(2) : true
+		cleanWs()
   println "Checking if ${getViewName()} view exists and EXITING if it does not."
 	(!checkIfViewExistInJenkins()) ? returnExitStatus(1) : true
   cleanWs()
@@ -110,4 +125,20 @@ def getJobName(String job_type){
     case "ocDeploy":
       return "avaloq-wb-constellation-"+"${branch_type}"+"-"+"${release_no}"+"-oc-deploy"
 	}
+}
+
+
+def returnExitStatus(exitStatus){
+	switch(exitStatus) {
+		case 1:
+			println "ERROR: View in Jenkins does not exist. Please create a view manually first..."
+			break
+		case 2:
+			println "ERROR: Job in Jenkins already exists. Please use another name..."
+			break
+		case 3:
+			println "ERROR: Variable undefined or invalid. Please enter all mandatory fields correctly..."
+			break
+	}
+	sh "exit ${exitStatus}"
 }
