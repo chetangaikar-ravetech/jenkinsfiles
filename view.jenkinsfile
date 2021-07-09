@@ -6,6 +6,10 @@ HOST="c0d00434"
 timestamps {
   node {
     try {
+      stage('Verify values before proceeding') {
+				cleanWs()
+        verifyValues()
+			}
       stage('Update View in Jenkins') {
         cleanWs()
           updateViewInJenkins()
@@ -16,9 +20,29 @@ timestamps {
         } finally {
 	    stage('Cleanup') {
 	        cleanWs()
-	}
-	}
+          }
+    }
+  }
 }
+
+def verifyValues() {
+  println "Checking if ${getViewName()} view exists and EXITING if it does not."
+	(!checkIfViewExistInJenkins()) ? returnExitStatus(1) :  true
+  cleanWs()
+}
+
+def checkIfViewExistInJenkins(){
+	configXML = sh(script: "curl -X GET \"${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml\" -u ${JENKINS_API_TOKEN}", returnStdout: true)
+	return (configXML.contains("404 Not Found")) ? false : true
+}
+
+String getViewName(){
+	string branch_type = "${BRANCH}".split("/")[0]
+	if(branch_type.contains("release"))
+		viewName = "avaloq-wb-constellation-release"
+  else if(branch_type.contains("develop"))
+    viewName = "avaloq-wb-constellation-develop"
+	return viewName
 }
 
 def updateViewInJenkins(){
@@ -34,15 +58,6 @@ def updateViewInJenkins(){
 		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
 	"""
 	}
-
-String getViewName(){
-	string branch_type = "${BRANCH}".split("/")[0]
-	if(branch_type.contains("release"))
-		viewName = "avaloq-wb-constellation-release"
-  else if(branch_type.contains("develop"))
-    viewName = "avaloq-wb-constellation-develop"
-	return viewName
-}
 
 def generateConfigXML(String job_type){
   string branch_type = "${BRANCH}".split("/")[0]
