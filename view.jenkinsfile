@@ -90,7 +90,7 @@ def getJobName(String job_type){
   string release_no = "${BRANCH}".split("/")[1]
 	switch(job_type){
 		case "adaiRelease":
-			return 'avaloq-product-wb-front-platform-adai-${branch_type}-${release_no}-deploy'
+			return "avaloq-product-wb-front-platform-adai-"+"${branch_type}"+"-"+"${release_no}"+"-deploy"
 		case "adaiClone":
 			return 'avaloq-wb-constellation-${branch_type}-${release_no}-adai-clone'
 		case "buldSnapshot":
