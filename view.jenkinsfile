@@ -1,6 +1,7 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
 JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/"
-BRANCH="develop/4.1.x"
+JENKINS_BASE_URL="http://35.173.230.44:8080/job/Products/job/WB/job/WB3.0/"
+BRANCH="release/4.1.x"
 HOST="c0d00434"
 
 timestamps {
@@ -12,15 +13,19 @@ timestamps {
 			}
       stage('Update View in Jenkins') {
         cleanWs()
-          updateViewInJenkins()
-          }
-        } catch (error) {
-            echo "Caught Exception: ${error}"
+        updateViewInJenkins()
+      }
+      stage('Create Front Platform ADAI Release Job in Jenkins') {
+				cleanWs()
+				createJobInJenkins("adaiRelease")
+			}
+    } catch (error) {
+        echo "Caught Exception: ${error}"
 	    currentBuild.result = 'FAILURE'
-        } finally {
+      } finally {
 	    stage('Cleanup') {
 	        cleanWs()
-          }
+        }
     }
   }
 }
@@ -45,20 +50,6 @@ String getViewName(){
 	return viewName
 }
 
-def updateViewInJenkins(){
-	println "Updating ${getViewName()} View in Jenkins..."
-  generateConfigXML("view")
-	sh """
-		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
-		cat viewconfig.xml
-		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/listview4x.xml' viewconfig.xml
-		echo ------------------------------------------------------
-		cat viewconfig.xml
-		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
-		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
-	"""
-	}
-
 def generateConfigXML(String job_type){
   string branch_type = "${BRANCH}".split("/")[0]
   string release_no = "${BRANCH}".split("/")[1]
@@ -70,6 +61,38 @@ def generateConfigXML(String job_type){
 			-e "s|%BRANCH_TYPE%|${branch_type}|g" \
 			-e "s|%RELEASE_NO%|${release_no}|g" \
 			-e "s|%HOST%|${HOST}|g" \
-			listview4x.xml
+			${job_type}-job-template.xml
 	"""
+}
+
+def updateViewInJenkins(){
+	println "Updating ${getViewName()} View in Jenkins..."
+  generateConfigXML("view")
+	sh """
+		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
+		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/listview4x.xml' viewconfig.xml
+		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
+		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
+	"""
+	}
+
+
+def createJobInJenkins(String job_type){
+	println "Creating ${getJobName(job_type)} Jenkins job..."
+	generateConfigXML(job_type)
+	postXML = sh(script: "curl -X GET \"${JENKINS_BASE_URL}createItem?name=${getJobName(job_type)}\" -u ${JENKINS_API_TOKEN} --data-binary \"@jenkinsfiles/src/job-templates/${job_type}-job-template.xml\" -H \"Content-Type:application/xml\" ", returnStdout: true)
+	if(postXML.contains("No Content-Type header set")){ println "ERROR: Creating of Jenkins job failed..."; sh "exit 4"}
+}
+
+def getJobName(String job_type){
+	switch(job_type){
+		case "adaiRelease":
+			return 'avaloq-product-wb-front-platform-adai-'+${branch_type}+'-'+${release_no}+'-deploy'
+		case "adaiClone":
+			return 'avaloq-wb-constellation-'+${branch_type}+'-'+${release_no}+'-adai-clone'
+		case "buldSnapshot":
+			return 'avaloq-wb-constellation-'+${branch_type}+'-'+${release_no}+'-build-snapshot'
+    case "ocDeploy":
+      return 'avaloq-wb-constellation-'+${branch_type}+'-'+${release_no}+'-oc-deploy'
+	}
 }
