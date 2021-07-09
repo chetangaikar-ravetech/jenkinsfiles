@@ -46,7 +46,7 @@ def generateConfigXML(String job_type){
   string branch_type = "${BRANCH}".split("/")[0]
   string release_no = "${BRANCH}".split("/")[1]
 	sh """
-		git clone ssh://git@bitbucket.sits.avaloq.net/fd/jenkinsfiles.git
+		git clone https://github.com/chetangaikar-ravetech/jenkinsfiles.git
 		cd jenkinsfiles
 		cd src/job-templates
 		sed -i -r \
