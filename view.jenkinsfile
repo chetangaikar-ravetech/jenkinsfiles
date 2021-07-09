@@ -19,6 +19,10 @@ timestamps {
 				cleanWs()
 				createJobInJenkins("adaiRelease")
 			}
+      stage('Create ADAI Clone Job in Jenkins') {
+				cleanWs()
+				createJobInJenkins("adaiClone")
+			}
     } catch (error) {
         echo "Caught Exception: ${error}"
 	    currentBuild.result = 'FAILURE'
