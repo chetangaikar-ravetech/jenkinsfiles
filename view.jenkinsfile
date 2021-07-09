@@ -27,7 +27,7 @@ timestamps {
 
 def verifyValues() {
   println "Checking if ${getViewName()} view exists and EXITING if it does not."
-	(!checkIfViewExistInJenkins()) ? returnExitStatus(1) :  true
+	(!checkIfViewExistInJenkins()) ? returnExitStatus(1) : true
   cleanWs()
 }
 
