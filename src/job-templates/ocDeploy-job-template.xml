@@ -43,25 +43,25 @@
         <hudson.model.StringParameterDefinition>
           <name>BRANCH</name>
           <description>The branch to checkout and build.</description>
-          <defaultValue>release/4.1</defaultValue>
+          <defaultValue>%BRANCH_TYPE%/%RELEASE_NO%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>ADAI_HOST</name>
           <description>The ADAI host DB where ACP is installed and where the rest services will connect to.</description>
-          <defaultValue>c0d00434</defaultValue>
+          <defaultValue>%HOST%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>NAMESPACE</name>
           <description/>
-          <defaultValue>avaloq-wb-constellation-c0d00434</defaultValue>
+          <defaultValue>avaloq-wb-constellation-%HOST%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>ADMIN_USERS</name>
           <description>Comma-separated list of users to be admins of the Openshift namespace.</description>
-          <defaultValue>u004384,u103313,u003952,u003890,u003987,u004108,u003491,u003842,u003990, u003971, u001973</defaultValue>
+          <defaultValue>u004384,u103313,u003952,u003890,u003987,u004108,u003491,u003842,u003990,u003971,u001973</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
