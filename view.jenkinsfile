@@ -1,6 +1,6 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
 JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/user/chetangaikar/my-views/view/"
-JENKINS_BASE_URL="http://35.173.230.44:8080/job/Products/job/WB/job/WB3.0/"
+JENKINS_BASE_URL="http://35.173.230.44:8080/job/Product/job/WB/job/WB3.0/"
 BRANCH="release/4.1.x"
 HOST="c0d00434"
 
