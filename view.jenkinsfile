@@ -23,6 +23,14 @@ timestamps {
 				cleanWs()
 				createJobInJenkins("adaiClone")
 			}
+      stage('Create ADAI Clone Job in Jenkins') {
+				cleanWs()
+				createJobInJenkins("buildSnapshot")
+			}
+      stage('Create ADAI Clone Job in Jenkins') {
+				cleanWs()
+				createJobInJenkins("ocDeploy")
+			}
     } catch (error) {
         echo "Caught Exception: ${error}"
 	    currentBuild.result = 'FAILURE'
@@ -97,7 +105,7 @@ def getJobName(String job_type){
 			return "avaloq-product-wb-front-platform-adai-"+"${branch_type}"+"-"+"${release_no}"+"-deploy"
 		case "adaiClone":
 			return "avaloq-wb-constellation-"+"${branch_type}"+"-"+"${release_no}"+"-adai-clone"
-		case "buldSnapshot":
+		case "buildSnapshot":
 			return "avaloq-wb-constellation-"+"${branch_type}"+"-"+"${release_no}"+"-build-snapshot"
     case "ocDeploy":
       return "avaloq-wb-constellation-"+"${branch_type}"+"-"+"${release_no}"+"-oc-deploy"
