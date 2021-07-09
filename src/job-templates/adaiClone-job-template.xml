@@ -33,19 +33,19 @@
         <hudson.model.StringParameterDefinition>
           <name>ADAI_GUEST</name>
           <description/>
-          <defaultValue>%HOST%</defaultValue>
+          <defaultValue>%DEPLOY_HOST%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>DB_ID</name>
           <description/>
-          <defaultValue>AFP Adapter Integration - AFP 4.x on ACP 5.2</defaultValue>
+          <defaultValue>%ADAPTER_INTEGRATION_DB%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>INSTALL_CHANGE</name>
           <description/>
-          <defaultValue>1550585,1809442</defaultValue>
+          <defaultValue>%ICE_CHANGES%</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
