@@ -96,10 +96,10 @@ def getJobName(String job_type){
 		case "adaiRelease":
 			return "avaloq-product-wb-front-platform-adai-"+"${branch_type}"+"-"+"${release_no}"+"-deploy"
 		case "adaiClone":
-			return 'avaloq-wb-constellation-${branch_type}-${release_no}-adai-clone'
+			return "avaloq-wb-constellation-"+"${branch_type}"+"-"+"${release_no}"+"-adai-clone"
 		case "buldSnapshot":
-			return 'avaloq-wb-constellation-${branch_type}-${release_no}-build-snapshot'
+			return "avaloq-wb-constellation-"+"${branch_type}"+"-"+"${release_no}"+"-build-snapshot"
     case "ocDeploy":
-      return 'avaloq-wb-constellation-${branch_type}-${release_no}-oc-deploy'
+      return "avaloq-wb-constellation-"+"${branch_type}"+"-"+"${release_no}"+"-oc-deploy"
 	}
 }
