@@ -79,7 +79,7 @@ def generateConfigXML(String job_type){
 	sh """
 		git clone https://github.com/chetangaikar-ravetech/jenkinsfiles.git
 		cd jenkinsfiles
-		cd src/job-templates
+		cd src/wb3.0-nightly-dev-job-templates
 		sed -i -r \
 			-e "s|%BRANCH_TYPE%|${branch_type}|g" \
       -e "s|%SMALL_BRANCH_TYPE%|${small_branch_type}"
