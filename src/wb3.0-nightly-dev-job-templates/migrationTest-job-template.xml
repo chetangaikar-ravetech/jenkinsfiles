@@ -60,7 +60,7 @@
   <triggers>
     <jenkins.triggers.ReverseBuildTrigger>
       <spec/>
-      <upstreamProjects>Products/WB/WB3.0/server-rest-web/af-web-banking-core-nightly-%SMALL_BRANCH_TYPE-%RELEASE_NO%-build</upstreamProjects>
+      <upstreamProjects>Products/WB/WB3.0/server-rest-web/af-web-banking-core-nightly-%SMALL_BRANCH_TYPE%-%RELEASE_NO%-build</upstreamProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
