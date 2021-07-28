@@ -112,7 +112,7 @@ def checkIfJobExistInJenkins(String job_type){
 def createJobInJenkins(String job_type){
 	println "Creating ${getJobName(job_type)} Jenkins job..."
 	generateConfigXML(job_type)
-	postXML = sh(script: "curl -X GET \"${JENKINS_BASE_URL}createItem?name=${getJobName(job_type)}\" -u ${JENKINS_API_TOKEN} --data-binary \"@jenkinsfiles/src/job-templates/${job_type}-job-template.xml\" -H \"Content-Type:application/xml\" ", returnStdout: true)
+	postXML = sh(script: "curl -X GET \"${JENKINS_BASE_URL}createItem?name=${getJobName(job_type)}\" -u ${JENKINS_API_TOKEN} --data-binary \"@jenkinsfiles/src/wb3.0-nightly-dev-job-templates/${job_type}-job-template.xml\" -H \"Content-Type:application/xml\" ", returnStdout: true)
 	if(postXML.contains("No Content-Type header set")){ println "ERROR: Creating of Jenkins job failed..."; sh "exit 4"}
 }
 
@@ -123,9 +123,9 @@ def getJobName(String job_type){
   string release_no = "${BRANCH}".split("/")[1]
 	switch(job_type){
 		case "coreBuild":
-			return "af-web-banking-core-nightly"+"${small_branch_type}"+"-"+"${release_no}"+"-build"
+			return "af-web-banking-core-nightly-"+"${small_branch_type}"+"-"+"${release_no}"+"-build"
 		case "migrationTest":
-			return "af-web-banking-migration-nightly"+"${small_branch_type}"+"-"+"${release_no}"+"-test"
+			return "af-web-banking-migration-nightly-"+"${small_branch_type}"+"-"+"${release_no}"+"-test"
 	}
 }
 
