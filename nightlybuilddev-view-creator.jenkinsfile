@@ -1,5 +1,5 @@
 JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
-JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/view/Avaloq/job/Product/job/WB/job/WB3.0/view/avaloq-core-components/job/server-rest-web/view/Nightly%20Builds%20Develop%20FP%20Branches/"
+JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/view/Avaloq/job/Product/job/WB/job/WB3.0/view/avaloq-core-components/job/server-rest-web/view/"
 JENKINS_BASE_URL="http://35.173.230.44:8080/job/Product/job/WB/job/WB3.0/job/server-rest-web/"
 JENKINS_JOB_BASE_URL=JENKINS_BASE_URL+"job/"
 
