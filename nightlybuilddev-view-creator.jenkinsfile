@@ -82,11 +82,11 @@ def generateConfigXML(String job_type){
 		cd src/wb3.0-nightly-dev-job-templates
 		sed -i -r \
 			-e "s|%BRANCH_TYPE%|${branch_type}|g" \
-      -e "s|%SMALL_BRANCH_TYPE%|${small_branch_type}"
+      -e "s|%SMALL_BRANCH_TYPE%|${small_branch_type}|g"
 			-e "s|%RELEASE_NO%|${release_no}|g" \
-      -e "s|%CRON_EXPRESION%|${params.cron_expression}" \
-      -e "s|%RELEASE_ORIGIN%|${release_origin}" \
-      -e "s|%RELEASE_TARGET%|${release_target}" \
+      -e "s|%CRON_EXPRESION%|${params.cron_expression}|g" \
+      -e "s|%RELEASE_ORIGIN%|${release_origin}|g" \
+      -e "s|%RELEASE_TARGET%|${release_target}|g" \
 			${job_type}-job-template.xml
 	"""
 }
