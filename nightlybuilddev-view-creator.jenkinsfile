@@ -39,7 +39,7 @@ timestamps {
 
 def verifyValues() {
   println "Checking for the empty parameters."
-  ((params.BRANCH.isEmpty() || !params.BRANCH.contains("/")) && (params.deployHOST.isEmpty())) ? returnExitStatus(3) : true
+  ((params.BRANCH.isEmpty() || !params.BRANCH.contains("/")) && (params.cronExpression.isEmpty())) ? returnExitStatus(3) : true
 
   println "Checking if ${getJobName("coreBuild")} Jobs exist; otherwise EXITING if it does."
   (checkIfJobExistInJenkins("coreBuild")) ? returnExitStatus(2) : true
