@@ -70,7 +70,7 @@ String getViewName(){
 def generateConfigXML(String job_type){
   string branch_type = "${BRANCH}".split("/")[0]
   if(branch_type.contains("develop"))
-    sting small_branch_type="dev"
+    string small_branch_type="dev"
   string release_no = "${BRANCH}".split("/")[1]
   int release_int = "${"${release_no}".split("\\.")[0] + "${release_no}".split("\\.")[1]}".toInteger()
   string release_origin = "${(release_int-1).toString().charAt(0)}" + "." + "${(release_int-1).toString().charAt(1)}"
