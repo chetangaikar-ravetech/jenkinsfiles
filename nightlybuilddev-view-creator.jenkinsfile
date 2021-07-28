@@ -1,0 +1,146 @@
+JENKINS_API_TOKEN="chetangaikar:11b7b83bc28269ac2920997f8cf367ff3b"
+JENKINS_VIEW_BASE_URL="http://35.173.230.44:8080/view/Avaloq/job/Product/job/WB/job/WB3.0/view/avaloq-core-components/job/server-rest-web/view/Nightly%20Builds%20Develop%20FP%20Branches/"
+JENKINS_BASE_URL="http://35.173.230.44:8080/job/Product/job/WB/job/WB3.0/job/server-rest-web/"
+JENKINS_JOB_BASE_URL=JENKINS_BASE_URL+"job/"
+
+//Parameters
+//BRANCH="release/4.1.x"
+//cronExpression="H 22 * * *"
+
+timestamps {
+  node {
+    try {
+      stage('Verify values before proceeding') {
+				cleanWs()
+        verifyValues()
+			}
+      stage('Update View in Jenkins') {
+        cleanWs()
+        updateViewInJenkins()
+      }
+      stage('Create WB Core Nightly Dev Build job in Jenkins') {
+				cleanWs()
+				createJobInJenkins("coreBuild")
+			}
+      stage('Create WB Migration Nightly Dev Test job in Jenkins') {
+				cleanWs()
+				createJobInJenkins("migrationTest")
+			}
+    } catch (error) {
+        echo "Caught Exception: ${error}"
+	    currentBuild.result = 'FAILURE'
+      } finally {
+	    stage('Cleanup') {
+	        cleanWs()
+        }
+    }
+  }
+}
+
+def verifyValues() {
+  println "Checking for the empty parameters."
+  ((params.BRANCH.isEmpty() || !params.BRANCH.contains("/")) && (params.deployHOST.isEmpty())) ? returnExitStatus(3) : true
+
+  println "Checking if ${getJobName("coreBuild")} Jobs exist; otherwise EXITING if it does."
+  (checkIfJobExistInJenkins("coreBuild")) ? returnExitStatus(2) : true
+		cleanWs()
+  println "Checking if ${getJobName("migrationTest")} Jobs exist; otherwise EXITING if it does."
+	(checkIfJobExistInJenkins("migrationTest")) ? returnExitStatus(2) : true
+		cleanWs()
+  println "Checking if ${getViewName()} view exists and EXITING if it does not."
+	(!checkIfViewExistInJenkins()) ? returnExitStatus(1) : true
+  cleanWs()
+}
+
+def checkIfViewExistInJenkins(){
+	configXML = sh(script: "curl -X GET \"${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml\" -u ${JENKINS_API_TOKEN}", returnStdout: true)
+	return (configXML.contains("404 Not Found")) ? false : true
+}
+
+String getViewName(){
+	//string branch_type = "${BRANCH}".split("/")[0]
+	//if(branch_type.contains("release"))
+		//viewName = "avaloq-wb-constellation-release"
+  //else if(branch_type.contains("develop"))
+    //viewName = "avaloq-wb-constellation-develop"
+  viewName = "Nightly%20Builds%20Develop%20FP%20Branches"
+  return viewName
+}
+
+def generateConfigXML(String job_type){
+  string branch_type = "${BRANCH}".split("/")[0]
+  if(branch_type.contains("develop"))
+    sting small_branch_type="dev"
+  string release_no = "${BRANCH}".split("/")[1]
+  int release_int = "${"${release_no}".split("\\.")[0] + "${release_no}".split("\\.")[1]}".toInteger()
+  string release_origin = "${(release_int-1).toString().charAt(0)}" + "." + "${(release_int-1).toString().charAt(1)}"
+  string release_target = "${release_int.toString().charAt(0)}" + "." + "${release_int.toString().charAt(1)}"
+
+	sh """
+		git clone https://github.com/chetangaikar-ravetech/jenkinsfiles.git
+		cd jenkinsfiles
+		cd src/job-templates
+		sed -i -r \
+			-e "s|%BRANCH_TYPE%|${branch_type}|g" \
+      -e "s|%SMALL_BRANCH_TYPE%|${small_branch_type}"
+			-e "s|%RELEASE_NO%|${release_no}|g" \
+      -e "s|%CRON_EXPRESION%|${params.cron_expression}" \
+      -e "s|%RELEASE_ORIGIN%|${release_origin}" \
+      -e "s|%RELEASE_TARGET%|${release_target}" \
+			${job_type}-job-template.xml
+	"""
+}
+
+def updateViewInJenkins(){
+	println "Updating ${getViewName()} View in Jenkins..."
+  generateConfigXML("view")
+	sh """
+		curl -X GET "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} -o viewconfig.xml
+		sed -i -e '/<sections>/ r jenkinsfiles/src/job-templates/view-job-template.xml' viewconfig.xml
+		curl -X POST "${JENKINS_VIEW_BASE_URL}${getViewName()}/config.xml" -u ${JENKINS_API_TOKEN} --data-binary "@viewconfig.xml" -H "Content-Type:application/xml" > result.xml
+		if grep -q "A problem occurred while processing the request" result.xml; then echo "ERROR: Failed to update the View..."; exit 5; fi
+	"""
+	}
+
+
+def checkIfJobExistInJenkins(String job_type){
+	println "Checking if Job exists..."
+	configXML = sh(script: "curl -X GET \"${JENKINS_JOB_BASE_URL}${getJobName(job_type)}/config.xml\" -u ${JENKINS_API_TOKEN}", returnStdout: true)
+	return (configXML.contains("404 Not Found")) ? false : true
+}
+
+def createJobInJenkins(String job_type){
+	println "Creating ${getJobName(job_type)} Jenkins job..."
+	generateConfigXML(job_type)
+	postXML = sh(script: "curl -X GET \"${JENKINS_BASE_URL}createItem?name=${getJobName(job_type)}\" -u ${JENKINS_API_TOKEN} --data-binary \"@jenkinsfiles/src/job-templates/${job_type}-job-template.xml\" -H \"Content-Type:application/xml\" ", returnStdout: true)
+	if(postXML.contains("No Content-Type header set")){ println "ERROR: Creating of Jenkins job failed..."; sh "exit 4"}
+}
+
+def getJobName(String job_type){
+  string branch_type = "${BRANCH}".split("/")[0]
+  if(branch_type.contains("develop"))
+    string small_branch_type = "dev"
+  string release_no = "${BRANCH}".split("/")[1]
+	switch(job_type){
+		case "coreBuild":
+			return "af-web-banking-core-nightly"+"${small_branch_type}"+"-"+"${release_no}"+"-build"
+		case "migrationTest":
+			return "af-web-banking-migration-nightly"+"${small_branch_type}"+"-"+"${release_no}"+"-test"
+	}
+}
+
+
+def returnExitStatus(exitStatus){
+	switch(exitStatus) {
+		case 1:
+			println "ERROR: View in Jenkins does not exist. Please create a view manually first..."
+			break
+		case 2:
+			println "ERROR: Job in Jenkins already exists. Please use another name..."
+			break
+		case 3:
+			println "ERROR: Variable undefined or invalid. Please enter all mandatory fields correctly..."
+			break
+	}
+	sh "exit ${exitStatus}"
+}

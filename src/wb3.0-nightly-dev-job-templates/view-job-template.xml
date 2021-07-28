@@ -1,0 +1,19 @@
+<hudson.plugins.sectioned__view.ListViewSection>
+  <jobNames>
+    <comparator class="hudson.util.CaseInsensitiveComparator"/>
+  </jobNames>
+  <jobFilters/>
+  <name>%BRANCH_TYPE%/%RELEASE_NO% | %PRODUCT_VERSION%</name>
+  <includeRegex>af-web-banking.*-nightly-%SMALL_BRANCH_TYPE%-%RELEASE_NO%.*</includeRegex>
+  <width>FULL</width>
+  <alignment>CENTER</alignment>
+  <columns>
+    <hudson.views.StatusColumn/>
+    <hudson.views.WeatherColumn/>
+    <hudson.views.JobColumn/>
+    <hudson.views.LastSuccessColumn/>
+    <hudson.views.LastFailureColumn/>
+    <hudson.views.LastDurationColumn/>
+    <hudson.views.BuildButtonColumn/>
+  </columns>
+</hudson.plugins.sectioned__view.ListViewSection>
