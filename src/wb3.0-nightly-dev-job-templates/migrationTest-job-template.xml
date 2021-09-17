@@ -3,10 +3,10 @@
   <description/>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.5">
+    <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.5">
       <siteName>https://jira.tracking.sits.avaloq.net/</siteName>
     </hudson.plugins.jira.JiraProjectProperty>
-    <jenkins.plugins.office365connector.WebhookJobProperty plugin="Office-365-Connector@4.15.0">
+    <jenkins.plugins.office365connector.WebhookJobProperty plugin="Office-365-Connector@4.15.0">
       <webhooks>
         <jenkins.plugins.office365connector.Webhook>
           <name>jenkins-notifications-connector-migration</name>
@@ -20,28 +20,28 @@
           <notifyBackToNormal>false</notifyBackToNormal>
           <notifyRepeatedFailure>false</notifyRepeatedFailure>
           <timeout>30000</timeout>
-          <macros class="empty-list"/>
-          <factDefinitions class="empty-list"/>
+          <macros class="empty-list"/>
+          <factDefinitions class="empty-list"/>
         </jenkins.plugins.office365connector.Webhook>
       </webhooks>
     </jenkins.plugins.office365connector.WebhookJobProperty>
-    <org.bstick12.jenkinsci.plugins.leastload.LeastLoadDisabledProperty plugin="leastload@3.0.0">
+    <org.bstick12.jenkinsci.plugins.leastload.LeastLoadDisabledProperty plugin="leastload@3.0.0">
       <leastLoadDisabled>false</leastLoadDisabled>
     </org.bstick12.jenkinsci.plugins.leastload.LeastLoadDisabledProperty>
-    <org.jenkinsci.plugins.mavenrepocleaner.MavenRepoCleanerProperty plugin="maven-repo-cleaner@1.2">
+    <org.jenkinsci.plugins.mavenrepocleaner.MavenRepoCleanerProperty plugin="maven-repo-cleaner@1.2">
       <notOnThisProject>false</notOnThisProject>
     </org.jenkinsci.plugins.mavenrepocleaner.MavenRepoCleanerProperty>
-    <com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty plugin="naginator@1.18.1">
+    <com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty plugin="naginator@1.18.1">
       <optOut>false</optOut>
     </com.chikli.hudson.plugin.naginator.NaginatorOptOutProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.32">
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.32">
       <autoRebuild>false</autoRebuild>
       <rebuildDisabled>false</rebuildDisabled>
     </com.sonyericsson.rebuild.RebuildSettings>
-    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.3">
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.3">
       <maxConcurrentPerNode>1</maxConcurrentPerNode>
       <maxConcurrentTotal>1</maxConcurrentTotal>
-      <categories class="java.util.concurrent.CopyOnWriteArrayList">
+      <categories class="java.util.concurrent.CopyOnWriteArrayList">
         <string>database_compare</string>
       </categories>
       <throttleEnabled>true</throttleEnabled>
@@ -51,7 +51,7 @@
       <configVersion>1</configVersion>
     </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
   </properties>
-  <scm class="hudson.scm.NullSCM"/>
+  <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
   <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -71,7 +71,7 @@
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
-    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.41">
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.41">
       <configs>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
@@ -104,7 +104,7 @@
     </hudson.plugins.parameterizedtrigger.TriggerBuilder>
   </builders>
   <publishers>
-    <hudson.tasks.Mailer plugin="mailer@1.34">
+    <hudson.tasks.Mailer plugin="mailer@1.34">
       <recipients>DevOps.Front@avaloq.com</recipients>
       <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
