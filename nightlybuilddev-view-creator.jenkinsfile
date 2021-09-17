@@ -6,6 +6,7 @@ JENKINS_JOB_BASE_URL=JENKINS_BASE_URL+"job/"
 //Parameters
 //BRANCH="release/4.1.x"
 //productVersion="2021.3.1"
+//cronExpression="H 22 * * *"
 
 timestamps {
   node {
@@ -84,8 +85,8 @@ def generateConfigXML(String job_type){
 			-e "s|%BRANCH_TYPE%|${branch_type}|g" \
       -e "s|%SMALL_BRANCH_TYPE%|${small_branch_type}|g" \
 			-e "s|%RELEASE_NO%|${release_no}|g" \
-      -e "s|%PRODUCT_VERSION%|${productVersion}|g" \
-      -e "s|%CRON_EXPRESION%|${params.cron_expression}|g" \
+      -e "s|%PRODUCT_VERSION%|${params.productVersion}|g" \
+      -e "s|%CRON_EXPRESION%|${params.cronExpression}|g" \
       -e "s|%RELEASE_ORIGIN%|${release_origin}|g" \
       -e "s|%RELEASE_TARGET%|${release_target}|g" \
       ${job_type}-job-template.xml

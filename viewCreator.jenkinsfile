@@ -7,6 +7,7 @@ JENKINS_JOB_BASE_URL=JENKINS_BASE_URL+"job/"
 //BRANCH="release/4.1.x"
 //deployHOST="c0d00434"
 //afsAdapterIntegrationDB="AFP Adapter Integration - AFP 4.x on ACP 5.2"
+//installIceChanges=""
 
 timestamps {
   node {
